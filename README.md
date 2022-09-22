@@ -1,5 +1,7 @@
 # ArduinoSketchUploader
 
+All the credit goes to the original repository creator from which i forked the solution, the only thing that i did for this is to re write some of the logic and add support for .net core 6 and make sure its working under Linux, Mac, Windows.  This version relies on System.IO.Ports, which allows it to run cross platform. I haven't refactored my code yet so sorry if its  a bit messy.
+
 This repository contains a .NET library and a corresponding Windows command line utility that can be used to upload a compiled sketch (.HEX) directly to an Arduino board over USB. It talks to the boards bootloader over the serial (USB) connection, much like *avrdude* does (when invoked from the Arduino IDE, or from the command line).
 
 ![ArduinoSketchUploader](https://github.com/christophediericx/ArduinoSketchUploader/blob/master/Images/ArduinoSketchUploader.png)
