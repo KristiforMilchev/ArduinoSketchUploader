@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using RJCP.IO.Ports;
+﻿using System.IO.Ports;
 
 namespace ArduinoUploader.BootloaderProgrammers.ResetBehavior
 {
@@ -7,21 +6,21 @@ namespace ArduinoUploader.BootloaderProgrammers.ResetBehavior
     {
         private static IArduinoUploaderLogger Logger => ArduinoSketchUploader.Logger;
 
-        public SerialPortStream Reset(SerialPortStream serialPort, SerialPortConfig config)
+        public SerialPort Reset(SerialPort serialPort, SerialPortConfig config)
         {
             const int timeoutVirtualPortDiscovery = 10000;
             const int virtualPortDiscoveryInterval = 100;
             Logger?.Info("Issuing forced 1200bps reset...");
             var currentPortName = serialPort.PortName;
-            var originalPorts = SerialPortStream.GetPortNames();
+            var originalPorts = SerialPort.GetPortNames();
 
             // Close port ...
             serialPort.Close();
 
             // And now open port at 1200 bps
-            serialPort = new SerialPortStream(currentPortName, 1200)
+            serialPort = new SerialPort(currentPortName, 1200)
             {
-                Handshake = Handshake.DtrRts
+              //  Handshake = Handshake.DtrRts
             };
             serialPort.Open();
 
@@ -29,7 +28,7 @@ namespace ArduinoUploader.BootloaderProgrammers.ResetBehavior
             serialPort.Close();
 
             var newPort = WaitHelper.WaitFor(timeoutVirtualPortDiscovery, virtualPortDiscoveryInterval,
-                () => SerialPortStream.GetPortNames().Except(originalPorts).SingleOrDefault(),
+                () => SerialPort.GetPortNames().Except(originalPorts).SingleOrDefault(),
                 (i, item, interval) =>
                     item == null
                         ? $"T+{i * interval} - Port not found"
@@ -39,14 +38,14 @@ namespace ArduinoUploader.BootloaderProgrammers.ResetBehavior
                 throw new ArduinoUploaderException(
                     $"No (unambiguous) virtual COM port detected (after {timeoutVirtualPortDiscovery}ms).");
 
-            return new SerialPortStream
+            return new SerialPort()
             {
                 BaudRate = config.BaudRate,
                 PortName = newPort,
                 DataBits = 8,
                 Parity = Parity.None,
                 StopBits = StopBits.One,
-                Handshake = Handshake.DtrRts
+              //  Handshake = Handshake.DtrRts
             };
         }
     }

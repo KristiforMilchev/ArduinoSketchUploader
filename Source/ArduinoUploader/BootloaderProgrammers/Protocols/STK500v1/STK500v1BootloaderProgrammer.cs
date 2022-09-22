@@ -22,6 +22,7 @@ namespace ArduinoUploader.BootloaderProgrammers.Protocols.STK500v1
                 SerialPort.DiscardInBuffer();
                 Send(new GetSyncRequest());
                 var result = Receive<GetSyncResponse>();
+                Console.WriteLine(result.ToString());
                 if (result == null) continue;
                 if (result.IsInSync) break;
                 Thread.Sleep(20);

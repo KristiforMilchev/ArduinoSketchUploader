@@ -1,5 +1,5 @@
-﻿using RJCP.IO.Ports;
-
+﻿using System.IO.Ports;
+ 
 namespace ArduinoUploader.BootloaderProgrammers.ResetBehavior
 {
     internal class ResetThroughTogglingDtrBehavior : IResetBehavior
@@ -11,7 +11,7 @@ namespace ArduinoUploader.BootloaderProgrammers.ResetBehavior
             Toggle = toggle;
         }
 
-        public SerialPortStream Reset(SerialPortStream serialPort, SerialPortConfig config)
+        public SerialPort Reset(SerialPort serialPort, SerialPortConfig config)
         {
             serialPort.DtrEnable = Toggle;
             return serialPort;

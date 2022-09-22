@@ -43,8 +43,9 @@ namespace ArduinoSketchUploader
         private static void Main(string[] args)
         {
             var logger = new ArduinoSketchUploaderLogger();
-            var commandLineOptions = new CommandLineOptions();
-            if (!Parser.Default.ParseArguments(args, commandLineOptions)) return;
+            var commandLineOptions = new  CommandLineOptions();
+            
+         //   if (!Parser.Default.ParseArguments(args, commandLineOptions)) return;
 
             var options = new ArduinoSketchUploaderOptions
             {

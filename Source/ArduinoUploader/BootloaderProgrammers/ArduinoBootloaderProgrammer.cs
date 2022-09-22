@@ -1,9 +1,9 @@
 ﻿using System;
+using System.IO.Ports;
 using System.Threading;
 using ArduinoUploader.BootloaderProgrammers.Protocols;
 using ArduinoUploader.Hardware;
-using RJCP.IO.Ports;
-
+ 
 namespace ArduinoUploader.BootloaderProgrammers
 {
     internal abstract class ArduinoBootloaderProgrammer : BootloaderProgrammer
@@ -16,7 +16,7 @@ namespace ArduinoUploader.BootloaderProgrammers
             SerialPortConfig = serialPortConfig;
         }
 
-        protected SerialPortStream SerialPort { get; set; }
+        protected SerialPort SerialPort { get; set; }
 
         public override void Open()
         {
@@ -24,7 +24,7 @@ namespace ArduinoUploader.BootloaderProgrammers
             var baudRate = SerialPortConfig.BaudRate;
             Logger?.Info($"Opening serial port {portName} - baudrate {baudRate}");
 
-            SerialPort = new SerialPortStream(portName, baudRate)
+            SerialPort = new SerialPort(portName, baudRate)
             {
                 ReadTimeout = SerialPortConfig.ReadTimeOut,
                 WriteTimeout = SerialPortConfig.WriteTimeOut

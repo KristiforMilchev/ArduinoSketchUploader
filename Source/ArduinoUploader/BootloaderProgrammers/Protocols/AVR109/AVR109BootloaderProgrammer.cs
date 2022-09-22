@@ -5,8 +5,7 @@ using System.Text;
 using ArduinoUploader.BootloaderProgrammers.Protocols.AVR109.Messages;
 using ArduinoUploader.Hardware;
 using ArduinoUploader.Hardware.Memory;
-using RJCP.IO.Ports;
-
+ 
 namespace ArduinoUploader.BootloaderProgrammers.Protocols.AVR109
 {
     internal class Avr109BootloaderProgrammer : ArduinoBootloaderProgrammer
@@ -28,7 +27,7 @@ namespace ArduinoUploader.BootloaderProgrammers.Protocols.AVR109
                 const int timeoutVirtualPointDisappearance = 10000;
                 const int virtualPortDisappearanceInterval = 100;
                 var result = WaitHelper.WaitFor(timeoutVirtualPointDisappearance, virtualPortDisappearanceInterval,
-                    () => SerialPortStream.GetPortNames().Contains(currentPort) ? null : currentPort,
+                    () => System.IO.Ports.SerialPort.GetPortNames().Contains(currentPort) ? null : currentPort,
                     (i, item, interval) =>
                         item == null
                             ? $"T+{i * interval} - Port still present..."

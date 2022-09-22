@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Ports;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -14,7 +15,8 @@ using ArduinoUploader.Config;
 using ArduinoUploader.Hardware;
 using IntelHexFormatReader;
 using IntelHexFormatReader.Model;
-using RJCP.IO.Ports;
+using Newtonsoft.Json;
+
 
 namespace ArduinoUploader
 {
@@ -56,7 +58,7 @@ namespace ArduinoUploader
             try
             {
                 var serialPortName = _options.PortName;
-                var allPortNames = SerialPortStream.GetPortNames();
+                var allPortNames = SerialPort.GetPortNames();
                 var distinctPorts = allPortNames.Distinct().ToList();
 
                 // If we don't specify a COM port, automagically select one if there is only a single match.
@@ -181,32 +183,131 @@ namespace ArduinoUploader
 
         private static Configuration ReadConfiguration()
         {
-            var assembly = Assembly.GetExecutingAssembly();
-            const string resourceName = "ArduinoUploader.ArduinoUploader.xml";
-            Configuration hardwareConfig;
-            var deserializer = new XmlSerializer(typeof(Configuration));
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
-            {
-                if (stream == null)
-                    throw new ArduinoUploaderException(
-                        $"Unable to extract embedded resource '{resourceName}'!");
+            var configuration = new Configuration();
 
-                try
-                {
-                    hardwareConfig = (Configuration) deserializer.Deserialize(stream);
-                }
-                catch (Exception ex)
-                {
-                    throw new ArduinoUploaderException(
-                        $"Unable to deserialize configuration: '{ex.Message}'!{Environment.NewLine}{ex.StackTrace}");
-                }
+            if (!File.Exists("Devices.json"))
+                configuration = CreateConfiguration();
+            else
+            {
+                var configData = File.ReadAllText("Devices.json");
+                configuration = JsonConvert.DeserializeObject<Configuration>(configData);
             }
-            return hardwareConfig;
+       
+            return configuration;
+        }
+
+        private static Configuration CreateConfiguration()
+        {
+            var cf = new Configuration();
+
+            cf.Arduinos = new[]
+            {
+
+                new Arduino
+                {
+                    Mcu = McuIdentifier.AtMega32U4,
+                    Model = "Leonardo",
+                    Protocol = Protocol.Avr109,
+                    BaudRate = 57600,
+                    ReadTimeout = 1000,
+                    WriteTimeout = 1000,
+                    CloseResetBehavior = string.Empty,
+                    SleepAfterOpen = 0,
+                    PostOpenResetBehavior = string.Empty,
+                    PreOpenResetBehavior = string.Empty
+                },
+                new Arduino
+                {
+                    Mcu = McuIdentifier.AtMega1284,
+                    Model = "Mega1284",
+                    Protocol = Protocol.Stk500v1,
+                    BaudRate = 115200,
+                    ReadTimeout = 1000,
+                    WriteTimeout = 1000,
+                    CloseResetBehavior = "DTR-RTS;250;50;true",
+                    SleepAfterOpen = 250,
+                    PostOpenResetBehavior = "DTR-RTS;50;250;true",
+                    PreOpenResetBehavior = string.Empty
+                },
+                new Arduino
+                {
+                    Mcu = McuIdentifier.AtMega2560,
+                    Model = "Mega2560",
+                    Protocol = Protocol.Stk500v2,
+                    BaudRate = 115200,
+                    ReadTimeout = 1000,
+                    WriteTimeout = 1000,
+                    CloseResetBehavior = "DTR-RTS;250;50;true",
+                    SleepAfterOpen = 250,
+                    PostOpenResetBehavior = "DTR-RTS;50;250;true",
+                    PreOpenResetBehavior = string.Empty
+                },
+                new Arduino
+                {
+                    Mcu = McuIdentifier.AtMega32U4,
+                    Model = "Micro",
+                    Protocol = Protocol.Avr109,
+                    BaudRate = 57600,
+                    ReadTimeout = 1000,
+                    WriteTimeout = 1000,
+                    CloseResetBehavior = string.Empty,
+                    SleepAfterOpen = 0,
+                    PostOpenResetBehavior = string.Empty,
+                    PreOpenResetBehavior = "1200bps"
+                },
+                new Arduino
+                {
+                    Mcu = McuIdentifier.AtMega168,
+                    Model = "NanoR2",
+                    Protocol = Protocol.Stk500v1,
+                    BaudRate = 19200,
+                    ReadTimeout = 1000,
+                    WriteTimeout = 1000,
+                    CloseResetBehavior = "DTR-RTS;250;50",
+                    SleepAfterOpen = 250,
+                    PostOpenResetBehavior = string.Empty,
+                    PreOpenResetBehavior = "DTR;true"
+                },
+                new Arduino
+                {
+                    Mcu = McuIdentifier.AtMega328P,
+                    Model = "NanoR3",
+                    Protocol = Protocol.Stk500v1,
+                    BaudRate = 57600,
+                    ReadTimeout = 1000,
+                    WriteTimeout = 1000,
+                    CloseResetBehavior = "DTR-RTS;250;50",
+                    SleepAfterOpen = 250,
+                    PostOpenResetBehavior = string.Empty,
+                    PreOpenResetBehavior = "DTR;true"
+                },
+                new Arduino
+                {
+                    Mcu = McuIdentifier.AtMega328P,
+                    Model = "UnoR3",
+                    Protocol = Protocol.Stk500v1,
+                    BaudRate = 115200,
+                    ReadTimeout = 1000,
+                    WriteTimeout = 1000,
+                    CloseResetBehavior = "DTR-RTS;50;250;false",
+                    SleepAfterOpen = 250,
+                    PostOpenResetBehavior = string.Empty,
+                    PreOpenResetBehavior = "DTR;true"
+                },
+            };
+
+            var serailize = JsonConvert.SerializeObject(cf);
+
+            File.WriteAllText("Devices.json", serailize);
+
+            return cf;
         }
 
         private static IResetBehavior ParseResetBehavior(string resetBehavior)
         {
-            if (resetBehavior == null) return null;
+            //Check with IsNullOrEmpty because Newtownsoft throws an error on older versions when converting null.
+            if (string.IsNullOrEmpty(resetBehavior)) return null;
+            
             if (resetBehavior.Trim().Equals("1200bps", StringComparison.OrdinalIgnoreCase))
                 return new ResetThrough1200BpsBehavior();
 

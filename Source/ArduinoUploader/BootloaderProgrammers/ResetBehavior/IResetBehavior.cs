@@ -1,9 +1,9 @@
-﻿using RJCP.IO.Ports;
-
+﻿using System.IO.Ports;
+ 
 namespace ArduinoUploader.BootloaderProgrammers.ResetBehavior
 {
     internal interface IResetBehavior
     {
-        SerialPortStream Reset(SerialPortStream serialPort, SerialPortConfig config);
+        SerialPort Reset(SerialPort serialPort, SerialPortConfig config);
     }
 }

@@ -8,7 +8,7 @@ namespace ArduinoSketchUploader
     {
         [Option('f', "file", Required = true,
             HelpText = "Path to the input file (in intel HEX format) which is to be uploaded to the Arduino.")]
-        public string FileName { get; set; }
+        public string FileName { get; set;  }
 
         [Option('p', "port", Required = false,
             HelpText = "Name of the COM port where the Arduino is attached (e.g. 'COM1', 'COM2', 'COM3'...).")]
@@ -19,14 +19,14 @@ namespace ArduinoSketchUploader
                 + "[Leonardo, Mega1284, Mega2560, Micro, NanoR2, NanoR3, UnoR3].")]
         public ArduinoModel ArduinoModel { get; set; }
 
-        [ParserState]
-        public IParserState LastParserState { get; set; }
+        // [ParserState]
+        // public IParserState LastParserState { get; set; }
 
-        [HelpOption]
-        public string GetUsage()
-        {
-            return HelpText.AutoBuild(this,
-                current => HelpText.DefaultParsingErrorsHandler(this, current));
-        }
+        // [HelpOption]
+        // public string GetUsage()
+        // {
+        //     return HelpText.AutoBuild(this,
+        //         current => HelpText.DefaultParsingErrorsHandler(this, current));
+        // }
     }
 }

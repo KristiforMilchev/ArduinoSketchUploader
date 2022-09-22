@@ -1,5 +1,6 @@
-﻿using System.Threading;
-using RJCP.IO.Ports;
+﻿using System.IO.Ports;
+using System.Threading;
+ 
 
 namespace ArduinoUploader.BootloaderProgrammers.ResetBehavior
 {
@@ -18,7 +19,7 @@ namespace ArduinoUploader.BootloaderProgrammers.ResetBehavior
             Invert = invert;
         }
 
-        public SerialPortStream Reset(SerialPortStream serialPort, SerialPortConfig config)
+        public SerialPort Reset(SerialPort serialPort, SerialPortConfig config)
         {
             Logger?.Trace("Toggling DTR/RTS...");
 
